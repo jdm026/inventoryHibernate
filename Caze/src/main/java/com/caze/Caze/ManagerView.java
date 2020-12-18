@@ -26,39 +26,51 @@ import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
+/* This class displays the login menu for employees
+*/
 public class ManagerView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static final App appManager = new App();
-	private static JPanel centerPanel;
-	private static JPanel northPanel;
-	private static JPanel southPanel;
-	private static JPanel westPanel;
+	private static JPanel optionList;
+	private static JPanel managerDatePanel;
+	private static JPanel buttonList;
 	private static Manager managerIn;
 	private static Timer timer;
 	
+	// Main method to execute program
 	public static void main(String[] args)
 	{
-		
+		// GUI Style
 		FlatLightLaf.install();
-    	
     	UIManager.put("Button.arc", 50);
     	UIManager.put("TextComponent.arc", 25);
     	
-    	
+    	// Schedule job for event
 		EventQueue.invokeLater(() ->
 		{
+			// Initializes database connection
 			appManager.setup();
+			
+			// Displays GUI
 			createGUI();
 		});
 		
 	}
 	
+	// No-arg Constructor
+	public ManagerView()
+	{
+		
+	}
+	
+	// Constructor
 	public ManagerView(String name)
 	{
 		super(name);
 	}
 	
+	// Displays login frame
 	private static void createGUI()
 	{
 		// Create and set up window
@@ -76,90 +88,98 @@ public class ManagerView extends JFrame {
 			
 	}
 	
+	// Adds component to frame instance
 	private void addComponentsToPane()
 	{
 		
+		// Timer function used to display welcoming message before
+		// displaying the manager home screen
 		timer.stop();
-		remove(northPanel);
-		remove(centerPanel);
-		remove(westPanel);
+		remove(managerDatePanel);
+		remove(optionList);
+		remove(buttonList);
 		
+		// Initialize panels
+		buttonList = new JPanel(new GridBagLayout());
+		optionList = new JPanel();
+		managerDatePanel = new JPanel(new GridBagLayout());
+		
+		// Buttons displayed in home screen
 		JButton btnInventoryManagement = new JButton("Inventory Management");
 		JButton btnInventoryReports= new JButton("Inventory Reports");
 		JButton btnStoreInfo = new JButton("Store Information");
 		
-		westPanel = new JPanel(new GridBagLayout());
+		// Add buttons to buttonList panel
 		GridBagConstraints gbc = new GridBagConstraints();
-		westPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		buttonList.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.insets = new Insets(6, 6, 6, 6);
-		westPanel.add(btnInventoryManagement, gbc);
+		buttonList.add(btnInventoryManagement, gbc);
 		
 		gbc.gridy = 1;
-		westPanel.add(btnInventoryReports, gbc);
+		buttonList.add(btnInventoryReports, gbc);
 		
 		gbc.gridy = 2;
-		westPanel.add(btnStoreInfo, gbc);
+		buttonList.add(btnStoreInfo, gbc);
 		
-		getContentPane().add(westPanel, BorderLayout.WEST);
+		// Add buttonList to frame
+		getContentPane().add(buttonList, BorderLayout.WEST);
 		
-		centerPanel = new JPanel();
-		southPanel = new JPanel();
 		
-		northPanel = new JPanel(new GridBagLayout());
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.insets = new Insets(6, 6, 6, 50);
 		
-		
+		// Initialize labels for manager and date
     	JLabel lblDate = new JLabel();
     	JLabel lblId = new JLabel();
     	
+    	// Display manager and date across the top border
     	lblDate.setText(LocalDate.now().getMonth().getValue() + " / " + LocalDate.now().getDayOfMonth() + " / " + LocalDate.now().getYear());
     	lblId.setText("Manager Menu - " +managerIn.getLast().toString());
     	
-    	northPanel.add(lblId, gbc);
+    	managerDatePanel.add(lblId, gbc);
     	gbc.gridx++;
     	gbc.insets = new Insets(6, 40, 6, 40);
-    	northPanel.add(new JLabel(""), gbc);
+    	managerDatePanel.add(new JLabel(""), gbc);
     	gbc.gridx++;
-    	northPanel.add(new JLabel(""), gbc);
+    	managerDatePanel.add(new JLabel(""), gbc);
     	gbc.gridx++;
     	gbc.insets = new Insets(6, 50, 6, 6);
-    	northPanel.add(lblDate, gbc);
-    	getContentPane().add(northPanel, BorderLayout.NORTH);
+    	managerDatePanel.add(lblDate, gbc);
+    	getContentPane().add(managerDatePanel, BorderLayout.NORTH);
 		repaint();
 		revalidate();
-		getContentPane().add(centerPanel, BorderLayout.CENTER);
+		getContentPane().add(optionList, BorderLayout.CENTER);
 		
-		getContentPane().add(southPanel, BorderLayout.SOUTH);
-		
-		
+		// Button event to display inventory management options
 		btnInventoryManagement.addActionListener(e -> {
 
-				remove(centerPanel);
+				remove(optionList);
 				repaint();
 				revalidate();
-				centerPanel = invMgmt();
-				getContentPane().add(centerPanel, BorderLayout.CENTER);
+				optionList = invMgmt();
+				getContentPane().add(optionList, BorderLayout.CENTER);
 				setVisible(true);
 				
 			});
 		
+		// Button event to display inventory report options
 		btnInventoryReports.addActionListener(e -> {
 			
-			remove(centerPanel);
+			remove(optionList);
 			repaint();
 			revalidate();
-			centerPanel = invReport();
-			getContentPane().add(centerPanel, BorderLayout.CENTER);
+			optionList = invReport();
+			getContentPane().add(optionList, BorderLayout.CENTER);
 			setVisible(true);
 			
 		});
 		
+		// Button event to display store information
 		btnStoreInfo.addActionListener(e -> {
 			
 			
@@ -167,16 +187,20 @@ public class ManagerView extends JFrame {
 		
 	}
 		
+	// Panel to display inventory management options
 	protected JPanel invMgmt()
 	{
-		centerPanel = new JPanel(new GridBagLayout());
+		// Initialize optionList panel
+		optionList = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		
+		// Button to display inventory management options
 		JLabel lblSearch = new JLabel("Search Item");
 		JLabel lblTransf = new JLabel("Transfer Item");
 		JLabel lblAdd = new JLabel("Add Item Count");
 		JLabel lblSub = new JLabel("Sub Item Count");
 		
+		// Add buttons to optionList panel
 		JLabel lblText = new JLabel();
 		lblText.setText("<html><b><i>Click To Select Option: </i></b></html>");
 		
@@ -184,24 +208,27 @@ public class ManagerView extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.insets = new Insets(0, 0, 10, 0);
-		centerPanel.add(lblText, gbc);
+		optionList.add(lblText, gbc);
 		
 		gbc.gridy++;
 		gbc.insets = new Insets(6, 3, 6, 3);
 		
-		centerPanel.add(lblTransf, gbc);
+		optionList.add(lblTransf, gbc);
 		
 		gbc.gridy++;
-		centerPanel.add(lblSearch, gbc);
+		optionList.add(lblSearch, gbc);
 		
 		gbc.gridy++;
-		centerPanel.add(lblAdd, gbc);
+		optionList.add(lblAdd, gbc);
 		
 		gbc.gridy++;
-		centerPanel.add(lblSub, gbc);
+		optionList.add(lblSub, gbc);
 		
 		setSize(new Dimension(500, 500));
 		
+		// Search button listener
+		// Call the addView method from SearchItem class
+		// to display popup window for search function
 		lblSearch.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent e)
@@ -212,13 +239,15 @@ public class ManagerView extends JFrame {
 					lblTransf.setText("<html><body style=\"color:black\">Transfer Item</body></html>");
 					lblAdd.setText("<html><body style=\"color:black\">Add Item Count</body></html>");
 					lblSub.setText("<html><body style=\"color:black\">Sub Item Count</body></html>");
-				//	SearchView.searchView(appManager);
 					SearchItem.addView(appManager);
 					
 				}
 			}
 		});
 		
+		// Transfer button listener
+		// Call the addView method from TransferItem class
+		// to display popup window for transfer function
 		lblTransf.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent e)
@@ -236,6 +265,9 @@ public class ManagerView extends JFrame {
 			}
 		});
 		
+		// Add item button listener
+		// Call the addView method from AddItemCount class
+		// to display popup window for adding item function
 		lblAdd.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent e)
@@ -252,8 +284,9 @@ public class ManagerView extends JFrame {
 			
 		});
 		
-		
-		
+		// Subtract item button listener
+		// Call the addView method from SubtractItemCount class
+		// to display popup window for subtracting item function
 		lblSub.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent e)
@@ -270,46 +303,23 @@ public class ManagerView extends JFrame {
 			
 		});
 		
-		centerPanel.addKeyListener(new KeyListener() {
-			
-			public void keyTyped(KeyEvent e) {
-				   
-			 }
-			    
-			 /** Handle the key pressed event from the text field. */
-			 public void keyPressed(KeyEvent e) {
-			        
-			 }
-			    
-		    /** Handle the key released event from the text field. */
-		    public void keyReleased(KeyEvent e) {
-		    	
-		    	if (e.getID() == KeyEvent.VK_A)
-				{
-					lblSearch.setText("<html><body style=\"color:red\">Search Item</body></html>");
-					lblAdd.setText("<html><body style=\"color:black\">Add Item Count</body></html>");
-					lblSub.setText("<html><body style=\"color:black\">Sub Item Count</body></html>");
-					SearchItem.addView(appManager);
-					
-				}
-		    	
-			}
-		});
-		
-		return centerPanel;
+		return optionList;
 		
 	}
 	
-	
+	// Panel to display inventory report options
 	private JPanel invReport()
 	{
-		centerPanel = new JPanel(new GridBagLayout());
+		// Initialize optionList
+		optionList = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		
+		// Button to display inventory report options
 		JLabel lblAdj = new JLabel("Item Adjustments");
 		JLabel lblSale = new JLabel("Sales");
 		JLabel lblOrd = new JLabel("Orders");
 		
+		// Add buttons to optionList panel
 		JLabel lblText = new JLabel();
 		lblText.setText("<html><b><i>Click To Select Option: </i></b></html>");
 		
@@ -317,18 +327,18 @@ public class ManagerView extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.insets = new Insets(0, 0, 10, 0);
-		centerPanel.add(lblText, gbc);
+		optionList.add(lblText, gbc);
 		
 		gbc.gridy++;
 		gbc.insets = new Insets(6, 3, 6, 3);
 		
-		centerPanel.add(lblAdj, gbc);
+		optionList.add(lblAdj, gbc);
 		
 		gbc.gridy++;
-		centerPanel.add(lblSale, gbc);
+		optionList.add(lblSale, gbc);
 		
 		gbc.gridy++;
-		centerPanel.add(lblOrd, gbc);
+		optionList.add(lblOrd, gbc);
 		
 		setSize(new Dimension(500, 500));
 		
@@ -341,7 +351,7 @@ public class ManagerView extends JFrame {
 					lblAdj.setText("<html><body style=\"color:red\">Item Adjustments</body></html>");
 					lblSale.setText("<html><body style=\"color:black\">Sales</body></html>");
 					lblOrd.setText("<html><body style=\"color:black\">Orders</body></html>");
-				//	SearchView.searchView();
+// ~~~~~~~~~~~~~~~~ Create class to display item adjustment reports ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 					
 				}
 			}
@@ -355,9 +365,7 @@ public class ManagerView extends JFrame {
 				{
 					lblAdj.setText("<html><body style=\"color:black\">Item Adjustments</body></html>");
 					lblSale.setText("<html><body style=\"color:red\">Sales</body></html>");
-					lblOrd.setText("<html><body style=\"color:black\">Orders</body></html>");
-					
-					
+					lblOrd.setText("<html><body style=\"color:black\">Orders</body></html>");					
 				}
 			}
 			
@@ -374,49 +382,52 @@ public class ManagerView extends JFrame {
 					lblAdj.setText("<html><body style=\"color:black\">Item Adjustments</body></html>");
 					lblSale.setText("<html><body style=\"color:black\">Sales</body></html>");
 					lblOrd.setText("<html><body style=\"color:red\">Orders</body></html>");
-				//	SubtractItemCount.subView();
 				}
 			}
 			
 		});
 		
-		return centerPanel;
+		return optionList;
 		
 	}
 
+	// Initial login screen
 	private void logIn()
 	{
-		northPanel = new JPanel(new GridBagLayout());
-		centerPanel = new JPanel();
-		westPanel = new JPanel();
+		// Initialize panel variables
+		managerDatePanel = new JPanel(new GridBagLayout());
+		optionList = new JPanel();
+		buttonList = new JPanel();
 		GridBagConstraints gbc = new GridBagConstraints();
 		
-		
+		// Declare and initialize login field and hide input
+		// Add field to panel
 		JPasswordField tfLogIn = new JPasswordField(13);
-		
 		tfLogIn.setEchoChar('*');
 		
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.insets = new Insets(3, 3, 3, 3);
-		JLabel lblText = new JLabel("Enter Password: ");
-		northPanel.add(lblText, gbc);
 		
-	//	gbc.insets = new Insets(0, 0, 0, 0);
+		// Declare and initialize label and text va
+		JLabel lblText = new JLabel("Enter Password: ");
+		managerDatePanel.add(lblText, gbc);
+		
 		gbc.gridx = 1;
-		northPanel.add(tfLogIn, gbc);
+		managerDatePanel.add(tfLogIn, gbc);
 		
 		JLabel txt = new JLabel();
     	txt.setText("");
     	gbc.gridy = 1;
-    	northPanel.add(txt, gbc);
+    	managerDatePanel.add(txt, gbc);
     	
-    	
-		getContentPane().add(northPanel, BorderLayout.NORTH);
-		getContentPane().add(centerPanel, BorderLayout.CENTER);
-		getContentPane().add(westPanel, BorderLayout.WEST);
+    	// Add panels to frame
+		getContentPane().add(managerDatePanel, BorderLayout.NORTH);
+		getContentPane().add(optionList, BorderLayout.CENTER);
+		getContentPane().add(buttonList, BorderLayout.WEST);
 		
+		// Timer instance to handle displaying welcoming message
 		timer = new Timer(2000, new ActionListener() {
 			
 			@Override
@@ -427,6 +438,7 @@ public class ManagerView extends JFrame {
 			
 		});
 		
+		// Handle login credentials
 		tfLogIn.addKeyListener( new KeyListener() {
 		
 			 public void keyTyped(KeyEvent e) {
@@ -441,7 +453,9 @@ public class ManagerView extends JFrame {
 		    /** Handle the key released event from the text field. */
 		    public void keyReleased(KeyEvent e) {
 		     
-		    	
+		    	// Standard password for this program has length 5
+		    	// If statement to run once the length requirement is
+		    	// met in the textfield
 		    	if (tfLogIn.getPassword().length == 5)
 		    	{
 		    		char[] pass = tfLogIn.getPassword();
@@ -450,6 +464,9 @@ public class ManagerView extends JFrame {
 		    		for (int i = 0; i < pass.length; i++)
 		    			check.append(pass[i]);
 		    		
+		    		// Try statement to check if manager can be initialized
+		    		// Catch if no manager was found, display message to console,
+		    		// and clear text field
 		    		try
 		    		{
 		   
@@ -459,8 +476,10 @@ public class ManagerView extends JFrame {
 		    		
 		    			// Calendar to check time of login
 		    			Calendar calendar = Calendar.getInstance();
-		    			int timeCheck = (calendar.getTime().getHours());
+		    			@SuppressWarnings("deprecation")
+						int timeCheck = (calendar.getTime().getHours());
 		    			
+		    			// Conditoinal for morning/afternoon message
 		    			if (timeCheck > 12)
 		    				txt.setText("Good Afterrnoon " + managerIn.getFirst()
 		    							+ " " + managerIn.getLast().charAt(0) + ".");
@@ -469,9 +488,9 @@ public class ManagerView extends JFrame {
 							+ " " + managerIn.getLast().charAt(0) + ".");
 		    			
 		    			gbc.gridy = 1;
-		    			northPanel.add(txt, gbc);
+		    			managerDatePanel.add(txt, gbc);
 		    		
-		    			getContentPane().add(northPanel, BorderLayout.NORTH);
+		    			getContentPane().add(managerDatePanel, BorderLayout.NORTH);
 		   				
 		    			timer.start();
 		    			
@@ -483,9 +502,9 @@ public class ManagerView extends JFrame {
 		    			txt.setText("<html><body style=\"color:red\">Invalid Password</body></html>");
 		    			gbc.gridy = 2;
 		    			gbc.insets = new Insets(6, 0, 0, 0);
-		    			northPanel.add(txt, gbc);
+		    			managerDatePanel.add(txt, gbc);
 		    			
-		    			getContentPane().add(northPanel, BorderLayout.NORTH);
+		    			getContentPane().add(managerDatePanel, BorderLayout.NORTH);
 		    			setVisible(true);
 		    			
 		    			tfLogIn.requestFocusInWindow();
